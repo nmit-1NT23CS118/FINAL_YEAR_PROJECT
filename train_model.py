@@ -48,7 +48,7 @@ print("Test images:", len(test_data))
 # ===============================
 # 4. LOAD EFFICIENTNET-B0
 # ===============================
-model = models.efficientnet_b0(pretrained=True)
+model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.DEFAULT)
 
 # Replace classifier layer
 model.classifier[1] = nn.Linear(
@@ -67,7 +67,14 @@ optimizer = optim.Adam(model.parameters(), lr=0.0001)
 # ===============================
 # 6. TRAINING WITH VALIDATION
 # ===============================
-epochs = 5
+import sys
+epochs = 2
+if len(sys.argv) > 1:
+    try:
+        epochs = int(sys.argv[1])
+        print(f"Overriding epochs to {epochs}")
+    except ValueError:
+        pass
 
 for epoch in range(epochs):
     print(f"\nEpoch {epoch+1}/{epochs}")
@@ -76,8 +83,9 @@ for epoch in range(epochs):
     # ---- TRAIN ----
     model.train()
     train_loss = 0
+    total_batches = len(train_loader)
 
-    for images, labels in train_loader:
+    for batch_idx, (images, labels) in enumerate(train_loader):
         images, labels = images.to(device), labels.to(device)
 
         optimizer.zero_grad()
@@ -88,7 +96,10 @@ for epoch in range(epochs):
 
         train_loss += loss.item()
 
-    avg_train_loss = train_loss / len(train_loader)
+        if (batch_idx + 1) % 50 == 0 or (batch_idx + 1) == total_batches:
+            print(f"  Batch {batch_idx + 1}/{total_batches} - Loss: {loss.item():.4f}")
+
+    avg_train_loss = train_loss / total_batches
     print(f"Training Loss: {avg_train_loss:.4f}")
 
     # ---- VALIDATION ----

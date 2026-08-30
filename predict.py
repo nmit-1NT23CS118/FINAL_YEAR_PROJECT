@@ -2,12 +2,14 @@ import torch
 import torch.nn as nn
 from torchvision import transforms, models
 from PIL import Image
+import os
+import sys
+
 
 # ===============================
 # 1. IMAGE PATH (YOUR IMAGE)
 # ===============================
-image_path = r"C:\Users\DELL\OneDrive\Documents\Pictures\images (1).jpg"
-
+image_path = r"C:\Users\DELL\OneDrive\Documents\Pictures\leaves_test\f2.jpg"
 # ===============================
 # 2. DEVICE
 # ===============================
@@ -25,6 +27,11 @@ transform = transforms.Compose([
 # ===============================
 # 4. LOAD IMAGE
 # ===============================
+if not os.path.exists(image_path):
+    print(f"Error: Image file not found at: {image_path}")
+    print("Please verify the path and make sure it is correct.")
+    sys.exit(1)
+
 image = Image.open(image_path).convert("RGB")
 image = transform(image).unsqueeze(0).to(device)
 
@@ -45,7 +52,7 @@ class_names = [
 # ===============================
 # 6. LOAD TRAINED MODEL
 # ===============================
-model = models.efficientnet_b0(pretrained=False)
+model = models.efficientnet_b0(weights=None)
 model.classifier[1] = nn.Linear(
     model.classifier[1].in_features,
     len(class_names)
@@ -86,7 +93,10 @@ treatment = {
 # ===============================
 # 9. OUTPUT
 # ===============================
-print("\n🌱 PLANT DISEASE DETECTION RESULT")
+try:
+    print("\n🌱 PLANT DISEASE DETECTION RESULT")
+except UnicodeEncodeError:
+    print("\n[PLANT] PLANT DISEASE DETECTION RESULT")
 print("--------------------------------")
 print(f"Disease Detected : {predicted_class}")
 print(f"Confidence       : {confidence:.2f}%")

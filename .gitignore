@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+
+# Dataset
+Data_set/
+
+# Machine learning model files
+*.pth
+*.keras
+*.h5
+
+# Python serialized files
+*.pkl
+
+# Local databases
+*.db
+
+# Environment/secrets
+.env
+
+# OS
+.DS_Store
+Thumbs.db
